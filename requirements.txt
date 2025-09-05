@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+itsdangerous
+pytest
+allure-pytest
+pydantic_settings
+pre-commit
+black
+isort
+flake8
+httpx

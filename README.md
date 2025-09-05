@@ -116,4 +116,3 @@ allure serve allure-results
 * Проверки (asserts)
 
 ---
-
