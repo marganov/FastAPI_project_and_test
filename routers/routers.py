@@ -5,7 +5,12 @@ from fastapi import FastAPI, HTTPException, Request, Response, status
 
 from data.data_base import db
 from models.user_model import User
-from security.cookies import COOKIE_NAME, create_signed_cookie, verify_signed_cookie
+from security.cookies import (
+    COOKIE_NAME,
+    create_signed_cookie,
+    set_session_cookie,
+    verify_signed_cookie,
+)
 
 app = FastAPI()
 
@@ -19,16 +24,10 @@ def login(user: User, response: Response):
         user_id = str(uuid4())  # генерим UUID
         session_token = create_signed_cookie(user_id)
 
-        response.set_cookie(
-            key=COOKIE_NAME,
-            value=session_token,
-            httponly=True,
-            max_age=3600,  # один час
-        )
+        set_session_cookie(response, session_token)
         return {"message": "Login successful", "user_id": user_id}
 
-    response.status_code = status.HTTP_401_UNAUTHORIZED
-    return {"message": "Unauthorized"}
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
 
 @app.get("/profile")
@@ -40,7 +39,7 @@ def get_profile(request: Request):
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized"
         )
 
-    user_id = verify_signed_cookie(session_token, max_age=3600)
+    user_id = verify_signed_cookie(session_token)
 
     if not user_id:
         raise HTTPException(

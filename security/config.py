@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     SECRET_KEY: str = Field(..., description="Secret key for signing cookies")
-    SESSION_MAX_AGE: int = 60
+    SESSION_MAX_AGE: int | None = None
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
