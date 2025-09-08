@@ -22,14 +22,18 @@ def verify_signed_cookie(token: str, max_age: int = 3600) -> str | None:
         return None  # если подпись неверная
 
 
-def set_session_cookie(responce: Response, value: str):
+def set_session_cookie(response: Response, value: str):
     """Устанавливает сессионную или персистентную печеньку"""
     if settings.SESSION_MAX_AGE:
-        responce.set_cookie(
+        response.set_cookie(
             key=COOKIE_NAME,
             value=value,
             httponly=True,
+            secure=True,  # Использовать только через HTTPS
+            samesite="lax",  # Защита от CSRF
             max_age=settings.SESSION_MAX_AGE,
         )
     else:
-        responce.set_cookie(key=COOKIE_NAME, value=value, httponly=True)
+        response.set_cookie(
+            key=COOKIE_NAME, value=value, httponly=True, secure=True, samesite="lax"
+        )

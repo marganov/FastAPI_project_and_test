@@ -15,4 +15,4 @@ def test_login_fail_wrong_password(client):
         assert resp.status_code == 401
 
     with allure.step("Проверяем сообщение Unauthorized"):
-        assert resp.json()["message"] == "Unauthorized"
+        assert resp.json()["detail"] == "Unauthorized"

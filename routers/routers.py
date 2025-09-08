@@ -1,7 +1,7 @@
 from hashlib import sha256
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException, Request, Response, status
+from fastapi import APIRouter, HTTPException, Request, Response, status
 
 from data.data_base import db
 from models.user_model import User
@@ -12,10 +12,10 @@ from security.cookies import (
     verify_signed_cookie,
 )
 
-app = FastAPI()
+router = APIRouter()
 
 
-@app.post("/login")
+@router.post("/login")
 def login(user: User, response: Response):
     # хэшируем пароль
     user.password = sha256(user.password.encode()).hexdigest()
@@ -30,7 +30,7 @@ def login(user: User, response: Response):
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
 
-@app.get("/profile")
+@router.get("/profile")
 def get_profile(request: Request):
     session_token = request.cookies.get(COOKIE_NAME)
 
@@ -49,7 +49,7 @@ def get_profile(request: Request):
     return {"message": "Welcome!", "user_id": user_id}
 
 
-@app.get("/user")
+@router.get("/user")
 def get_user(request: Request):
-    session_token = request.cookies.get("session_token", "invalid_session_token")
+    session_token = request.cookies.get(COOKIE_NAME, "invalid_session_token")
     return {"session_token": session_token}
